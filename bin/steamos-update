@@ -66,7 +66,10 @@ fi
 info "Update available"
 
 # Check mode, return success for update available
-[[ -z ${checkmode-} ]] || exit 0
+if [[ -n ${checkmode-} ]]; then
+  jq -r '.minor.candidates[0].image.buildid | select(type == "string")' <<< "$query"
+  exit 0
+fi
 
 if do_atomupd; then
   info "Applied an update"

@@ -18,6 +18,7 @@ session="${1:-gamescope}"
 
 session_launcher=""
 create_sentinel=""
+session_uses_x11=""
 
 case "$session" in
   plasma-wayland-persistent)
@@ -25,10 +26,12 @@ case "$session" in
   ;;
   plasma-persistent)
     session_launcher="plasma.desktop"
+    session_uses_x11=1
   ;;
   plasma)
     session_launcher="plasma-steamos-oneshot.desktop"
     create_sentinel=1
+    session_uses_x11=1
   ;;
   gamescope)
     session_launcher="gamescope-wayland.desktop"
@@ -38,10 +41,6 @@ case "$session" in
     exit 1
   ;;
 esac
-
-if [[ "$2" == "--sentinel-created" ]]; then
-    SENTINEL_CREATED=1
-fi
 
 # Update config sentinel
 if [[ -z $SENTINEL_CREATED ]]; then
@@ -59,18 +58,23 @@ if [[ -z $SENTINEL_CREATED ]]; then
   echo "Updated user selected session to $session_launcher"
 fi
 
+# TODO: Policykitize
 # Become root
 if [[ $EUID != 0 ]]; then
-  exec pkexec "$(realpath $0)" "$session" --sentinel-created
+  exec sudo --preserve-env=SENTINEL_CREATED "$0" "$@"
   exit 1
 fi
 
 {
+  if [[ -n $session_uses_x11 ]]; then
+    # Default is Wayland
+    echo "[General]"
+    echo "DisplayServer=X11"
+  fi
   echo "[Autologin]"
   echo "Session=$session_launcher"
 } > "$CONF_FILE"
 
 echo "Updated system autologin session to $session_launcher"
-systemctl reset-failed sddm
 systemctl restart sddm
 echo "Restarted SDDM"

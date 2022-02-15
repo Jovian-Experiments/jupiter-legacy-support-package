@@ -17,11 +17,13 @@ die() { info "!! $*"; exit 1; }
 checkmode=""
 error=""
 beta=""
+debug=""
 
 while [[ $# -ge 1 ]]; do
   case "$1" in
     "check") checkmode=1 ;;
     "--beta") beta=1 ;;
+    "-d") debug=1 ;;
     *)
       error=1
       info "Unknown option \"$1\""
@@ -35,7 +37,9 @@ if [[ -n $error ]]; then
   exit 1
 fi
 
-atomupd_args=(-d)
+atomupd_args=()
+
+[[ -n $debug ]] && atomupd_args+=(-d)
 
 if [[ -n $beta ]]; then
   # Make beta version of our manifest and use it

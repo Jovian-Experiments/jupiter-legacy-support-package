@@ -33,120 +33,37 @@ while [[ $# -ge 1 ]]; do
 done
 
 if [[ -n $error ]]; then
-  echo >&2 "!! Usage: $0 [check]"
+  echo >&2 "!! Usage: $0 [--beta] [check]"
   exit 1
 fi
 
-atomupd_args=(--manifest "/usr/share/steamos-update/manifest-0.json")
+atomupd_args=()
+
 [[ -n $debug ]] && atomupd_args+=(-d)
 
-# Determine which branches to check.
-check_rel=0
-check_rc=0
-check_beta=0
-check_bc=0
-check_main=0
-
 if [[ -n $beta ]]; then
-  info "'--beta' is deprecated; use 'steamos-select-branch beta' then 'steamos-update'"
-  check_beta=1
-else
-  branch_path="/var/lib/steamos-branch"
-  branch=$(cat "$branch_path" 2> /dev/null || echo "rel")
-  case "$branch" in
-    "rel")
-      check_rel=1
-      ;;
-    "rc")
-      check_rel=1
-      check_rc=1
-      ;;
-    "beta")
-      check_beta=1
-      ;;
-    "bc")
-      check_beta=1
-      check_bc=1
-      ;;
-    "main")
-      check_main=1
-      ;;
-    *)
-      echo "unknown branch name in $branch_path: $branch" 1>&2
-      exit 1
-      ;;
-  esac
+  # Make beta version of our manifest and use it
+
+  # $tmpdir is cleaned up by the exit hook above if we use it
+  tmpdir="$(mktemp -d --tmpdir steamos-update.XXXX)"
+  [[ -n $tmpdir && -d $tmpdir ]] || die "Could not create a temporary directory"
+
+  manifest="$tmpdir"/manifest.json
+  sed -r s/steamdeck/steamdeck-beta/ /etc/steamos-atomupd/manifest.json > "$manifest"
+  atomupd_args+=(--manifest "$manifest")
 fi
 
-# Get the buildid for each variant.
-get_buildid () {
-  if [[ $1 = 0 ]]; then
-    exit 0
-  fi
+do_atomupd() { sudo steamos-atomupd-client "${atomupd_args[@]}" "$@"; }
 
-  query="$(sudo steamos-atomupd-client "${atomupd_args[@]}" --variant="$2" --query-only)"
-  if [[ -z $query ]]; then
-    info "Failed to check for updates"
-    exit 1 # Unknown failure
-  fi
-
-  jq -r '.minor.candidates[0].image.buildid | select(type == "string")' <<< "$query"
-}
-
-buildid_rel="$(get_buildid $check_rel steamdeck)"
-buildid_rc="$(get_buildid $check_rc steamdeck-rc)"
-buildid_beta="$(get_buildid $check_beta steamdeck-beta)"
-buildid_bc="$(get_buildid $check_bc steamdeck-bc)"
-buildid_main="$(get_buildid $check_main steamdeck-main)"
-
-if [[ -n $debug ]]; then
-  info "buildid_rel=$buildid_rel"
-  info "buildid_rc=$buildid_rc"
-  info "buildid_beta=$buildid_beta"
-  info "buildid_bc=$buildid_bc"
-  info "buildid_main=$buildid_main"
+query="$(do_atomupd --query-only)"
+if [[ -z $query ]]; then
+  info "Failed to check for updates"
+  exit 1 # Unknown failure
 fi
 
-# Choose the variant with the newest buildid.
-chosen_buildid=""
-chosen_variant=""
-
-if [[ "$buildid_rel" > "$chosen_buildid" ]]; then
-  chosen_buildid="$buildid_rel"
-  chosen_variant="steamdeck"
-fi
-if [[ "$buildid_rc" > "$chosen_buildid" ]]; then
-  chosen_buildid="$buildid_rc"
-  chosen_variant="steamdeck-rc"
-fi
-if [[ "$buildid_beta" > "$chosen_buildid" ]]; then
-  chosen_buildid="$buildid_beta"
-  chosen_variant="steamdeck-beta"
-fi
-if [[ "$buildid_bc" > "$chosen_buildid" ]]; then
-  chosen_buildid="$buildid_bc"
-  chosen_variant="steamdeck-bc"
-fi
-if [[ "$buildid_main" > "$chosen_buildid" ]]; then
-  chosen_buildid="$buildid_main"
-  chosen_variant="steamdeck-main"
-fi
-
-if [[ -z "$chosen_variant" ]]; then
+if [[ $query = "{}" ]]; then
   info "No update available"
   exit 7
-fi
-
-manifest_path="/etc/steamos-atomupd/manifest.json"
-current_buildid=$(jq -r .buildid < "$manifest_path")
-if [[ "$current_buildid" = "$chosen_buildid" ]]; then
-  info "No update available"
-  exit 7
-fi
-
-if [[ -n $debug ]]; then
-  info "chosen_buildid=$chosen_buildid"
-  info "chosen_variant=$chosen_variant"
 fi
 
 # Update is available
@@ -154,12 +71,9 @@ info "Update available"
 
 # Check mode, return success for update available
 if [[ -n ${checkmode-} ]]; then
-  echo "$chosen_buildid"
+  jq -r '.minor.candidates[0].image.buildid | select(type == "string")' <<< "$query"
   exit 0
 fi
-
-# Not check mode. Update!
-do_atomupd() { sudo steamos-atomupd-client "${atomupd_args[@]}" --variant="$chosen_variant" "$@"; }
 
 if do_atomupd; then
   info "Applied an update"

@@ -42,6 +42,10 @@ case "$session" in
   ;;
 esac
 
+if [[ "$2" == "--sentinel-created" ]]; then
+    SENTINEL_CREATED=1
+fi
+
 # Update config sentinel
 if [[ -z $SENTINEL_CREATED ]]; then
   [[ -n ${HOME+x} ]] || die "No \$HOME variable"
@@ -58,10 +62,9 @@ if [[ -z $SENTINEL_CREATED ]]; then
   echo "Updated user selected session to $session_launcher"
 fi
 
-# TODO: Policykitize
 # Become root
 if [[ $EUID != 0 ]]; then
-  exec sudo --preserve-env=SENTINEL_CREATED "$0" "$@"
+  exec pkexec "$(realpath $0)" "$session" --sentinel-created
   exit 1
 fi
 

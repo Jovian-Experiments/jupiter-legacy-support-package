@@ -59,11 +59,9 @@ else
       check_rc=1
       ;;
     "beta")
-      check_rel=1
       check_beta=1
       ;;
     "bc")
-      check_rel=1
       check_beta=1
       check_bc=1
       ;;

@@ -81,7 +81,8 @@ get_buildid () {
     exit 0
   fi
 
-  atomupd_args=(--variant="$2" --query-only)
+  manifest_0_path="/usr/share/steamos-update/manifest-0.json"
+  atomupd_args=(--manifest-file="$manifest_0_path" --variant="$2" --query-only)
   [[ -n $debug ]] && atomupd_args+=(-d)
   query="$(sudo steamos-atomupd-client "${atomupd_args[@]}")"
   if [[ -z $query ]]; then
@@ -132,6 +133,13 @@ if [[ "$buildid_main" > "$chosen_buildid" ]]; then
 fi
 
 if [[ -z "$chosen_variant" ]]; then
+  info "No update available"
+  exit 7
+fi
+
+manifest_path="/etc/steamos-atomupd/manifest.json"
+current_buildid=$(jq -r .buildid < "$manifest_path")
+if [[ "$current_buildid" = "$chosen_buildid" ]]; then
   info "No update available"
   exit 7
 fi

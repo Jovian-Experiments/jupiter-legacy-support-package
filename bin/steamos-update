@@ -37,9 +37,6 @@ if [[ -n $error ]]; then
   exit 1
 fi
 
-atomupd_args=(--manifest "/usr/share/steamos-update/manifest-0.json")
-[[ -n $debug ]] && atomupd_args+=(-d)
-
 # Determine which branches to check.
 check_rel=0
 check_rc=0
@@ -84,7 +81,10 @@ get_buildid () {
     exit 0
   fi
 
-  query="$(sudo steamos-atomupd-client "${atomupd_args[@]}" --variant="$2" --query-only)"
+  manifest_0_path="/usr/share/steamos-update/manifest-0.json"
+  atomupd_args=(--manifest-file="$manifest_0_path" --variant="$2" --query-only)
+  [[ -n $debug ]] && atomupd_args+=(-d)
+  query="$(sudo steamos-atomupd-client "${atomupd_args[@]}")"
   if [[ -z $query ]]; then
     info "Failed to check for updates"
     exit 1 # Unknown failure
@@ -159,7 +159,9 @@ if [[ -n ${checkmode-} ]]; then
 fi
 
 # Not check mode. Update!
-do_atomupd() { sudo steamos-atomupd-client "${atomupd_args[@]}" --variant="$chosen_variant" "$@"; }
+atomupd_args=(--variant="$chosen_variant")
+[[ -n $debug ]] && atomupd_args+=(-d)
+do_atomupd() { sudo steamos-atomupd-client "${atomupd_args[@]}" "$@"; }
 
 if do_atomupd; then
   info "Applied an update"

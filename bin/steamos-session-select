@@ -45,6 +45,8 @@ fi
 
 # Update config sentinel
 if [[ -z $SENTINEL_CREATED ]]; then
+  [[ $EUID == 0 ]] && die "Running $0 as root is not allowed"
+
   [[ -n ${HOME+x} ]] || die "No \$HOME variable"
   config_dir="${XDG_CONF_DIR:-"$HOME/.config"}"
   (

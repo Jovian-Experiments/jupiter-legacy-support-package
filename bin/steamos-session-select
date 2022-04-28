@@ -24,7 +24,7 @@ case "$session" in
     session_launcher="plasmawayland.desktop"
   ;;
   plasma-persistent)
-    session_launcher="plasma-steamos.desktop"
+    session_launcher="plasma.desktop"
   ;;
   plasma)
     session_launcher="plasma-steamos-oneshot.desktop"

@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=XSession
-Exec=env QT_IM_MODULE=steam GTK_IM_MODULE=Steam /usr/bin/startplasma-steamos-oneshot
-TryExec=env QT_IM_MODULE=steam GTK_IM_MODULE=Steam /usr/bin/startplasma-steamos-oneshot
+Exec=/usr/bin/startplasma-steamos-oneshot
+TryExec=/usr/bin/startplasma-steamos-oneshot
 DesktopNames=KDE (One-Time Launch)
 Name=Plasma (One-Time Launch)
 Comment=Plasma by KDE - One Time Launch Redirect for SteamOS Sessions

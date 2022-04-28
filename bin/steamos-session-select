@@ -18,20 +18,17 @@ session="${1:-gamescope}"
 
 session_launcher=""
 create_sentinel=""
-session_uses_x11=""
 
 case "$session" in
   plasma-wayland-persistent)
     session_launcher="plasmawayland.desktop"
   ;;
   plasma-persistent)
-    session_launcher="plasma.desktop"
-    session_uses_x11=1
+    session_launcher="plasma-steamos.desktop"
   ;;
   plasma)
     session_launcher="plasma-steamos-oneshot.desktop"
     create_sentinel=1
-    session_uses_x11=1
   ;;
   gamescope)
     session_launcher="gamescope-wayland.desktop"
@@ -48,6 +45,8 @@ fi
 
 # Update config sentinel
 if [[ -z $SENTINEL_CREATED ]]; then
+  [[ $EUID == 0 ]] && die "Running $0 as root is not allowed"
+
   [[ -n ${HOME+x} ]] || die "No \$HOME variable"
   config_dir="${XDG_CONF_DIR:-"$HOME/.config"}"
   (
@@ -69,15 +68,11 @@ if [[ $EUID != 0 ]]; then
 fi
 
 {
-  if [[ -n $session_uses_x11 ]]; then
-    # Default is Wayland
-    echo "[General]"
-    echo "DisplayServer=X11"
-  fi
   echo "[Autologin]"
   echo "Session=$session_launcher"
 } > "$CONF_FILE"
 
 echo "Updated system autologin session to $session_launcher"
+systemctl reset-failed sddm
 systemctl restart sddm
 echo "Restarted SDDM"

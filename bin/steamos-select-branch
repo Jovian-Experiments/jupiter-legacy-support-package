@@ -8,7 +8,7 @@ if [[ "$#" = 1 ]]; then
     "-c")
       branch=$(cat "$BRANCH_PATH" 2> /dev/null || echo "rel")
       case "$branch" in
-        "rel" | "rc" | "beta" | "bc" | "main" | "staging")
+        "rel" | "rc" | "beta" | "bc" | "main")
           echo "$branch"
           exit 0
           ;;
@@ -27,12 +27,6 @@ if [[ "$#" = 1 ]]; then
       exit 0
       ;;
     "rel" | "rc" | "beta" | "bc" | "main")
-      echo "$1" > "$BRANCH_PATH"
-      exit 0
-      ;;
-    "staging")
-      echo "The staging branch has a high risk of breaking."
-      echo "Do NOT use it unless you know what you are doing."
       echo "$1" > "$BRANCH_PATH"
       exit 0
       ;;

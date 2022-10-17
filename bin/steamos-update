@@ -46,6 +46,7 @@ check_rc=0
 check_beta=0
 check_bc=0
 check_main=0
+check_staging=0
 
 if [[ -n $beta ]]; then
   info "'--beta' is deprecated; use 'steamos-select-branch beta' then 'steamos-update'"
@@ -70,6 +71,9 @@ else
       ;;
     "main")
       check_main=1
+      ;;
+    "staging")
+      check_staging=1
       ;;
     *)
       echo "unknown branch name in $branch_path: $branch" 1>&2
@@ -98,6 +102,7 @@ buildid_rc="$(get_buildid $check_rc steamdeck-rc)"
 buildid_beta="$(get_buildid $check_beta steamdeck-beta)"
 buildid_bc="$(get_buildid $check_bc steamdeck-bc)"
 buildid_main="$(get_buildid $check_main steamdeck-main)"
+buildid_staging="$(get_buildid $check_staging steamdeck-staging)"
 
 if [[ -n $debug ]]; then
   info "buildid_rel=$buildid_rel"
@@ -130,6 +135,10 @@ fi
 if [[ "$buildid_main" > "$chosen_buildid" ]]; then
   chosen_buildid="$buildid_main"
   chosen_variant="steamdeck-main"
+fi
+if [[ "$buildid_staging" > "$chosen_buildid" ]]; then
+  chosen_buildid="$buildid_staging"
+  chosen_variant="steamdeck-staging"
 fi
 
 if [[ -z "$chosen_variant" ]]; then

@@ -56,11 +56,11 @@ case "$session" in
     session_launcher="plasmawayland.desktop"
   ;;
   plasma-x11-persistent)
-    session_launcher="plasma-steamos.desktop"
+    session_launcher="plasma.desktop"
   ;;
   plasma)
     if [[ "$session_type" == "x11" ]]; then
-      session_launcher="plasma-steamos-x11-oneshot.desktop"
+      session_launcher="plasma-steamos-oneshot.desktop"
     else
       session_launcher="plasma-steamos-wayland-oneshot.desktop"
     fi

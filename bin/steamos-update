@@ -136,7 +136,7 @@ get_buildid () {
 
 buildid_ci=
 if [[ -n $ci_host ]]; then
-  buildid_ci="$(get_buildid 1 "$branch")"
+  buildid_ci="$(get_buildid 1 steamdeck-"$branch")"
 fi
 
 buildid_rel="$(get_buildid $check_rel steamdeck)"

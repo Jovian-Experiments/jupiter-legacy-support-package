@@ -2,6 +2,7 @@
 set -e
 
 BRANCH_PATH="/var/lib/steamos-branch"
+DEFAULT_BRANCH_PATH="/usr/lib/steamos/default-branch"
 CI_HOST_PATH="/var/lib/steamos-branch-ci-host"
 CI_KEY_PATH="/var/lib/steamos-branch-ci-key"
 
@@ -34,15 +35,18 @@ fi
 if [[ $# -eq 1 ]]; then
   case "$1" in
     "-c")
-      branch=$(cat "$BRANCH_PATH" 2> /dev/null || echo "rel")
+      branch=$(cat "$BRANCH_PATH" 2> /dev/null || cat "$DEFAULT_BRANCH_PATH" 2>/dev/null || echo "rel")
       case "$branch" in
         "rel" | "rc" | "beta" | "bc" | "main" | "staging")
           echo "$branch"
           exit 0
           ;;
         *)
-          echo "unknown branch name in $BRANCH_PATH: $branch" 1>&2
-          exit 1
+          # This can happen on CI builds or when downgrading from a newer build that knows of more branches.  The update
+          # path should decide how to handle it.
+          echo >&2 "Warning: Unrecognized currently selected branch name '$branch', updates may not succeed."
+          echo "$branch"
+          exit 0
           ;;
       esac
       ;;

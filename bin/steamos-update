@@ -220,6 +220,8 @@ fi
 # that the Steam client doesn't support yet
 if [[ -f "$STEAMOS_ATOMUPD_RUNTIME_DIR/$REBOOT_FOR_UPDATE" && -n $duplicate_detection ]]; then
   installed_buildid=$(< "$STEAMOS_ATOMUPD_RUNTIME_DIR/$REBOOT_FOR_UPDATE")
+  # Remove the eventual dash and "version" that could follow the buildid
+  installed_buildid="${installed_buildid%%-*}"
   if [[ "$installed_buildid" = "$chosen_buildid" ]]; then
     info "Update $chosen_buildid has already been applied, please reboot to enable it"
     exit 8

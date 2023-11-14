@@ -51,7 +51,11 @@ if [[ $# -eq 1 ]]; then
       esac
       ;;
     "-l")
-      echo galileo # tempo galileo hack
+      echo rel
+      echo rc
+      echo beta
+      echo bc
+      echo main
       exit 0
       ;;
     "rel" | "rc" | "beta" | "bc" | "main")

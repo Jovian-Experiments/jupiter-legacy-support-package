@@ -106,14 +106,12 @@ else
       check_rel=1
       ;;
     "rc")
-      check_rel=1
       check_rc=1
       ;;
     "beta")
       check_beta=1
       ;;
     "bc")
-      check_beta=1
       check_bc=1
       ;;
     "main")

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+cmd() { echo >&2 "+ ""${@@Q}"; "$@"; }
+
+for interface in $(iwconfig 2>/dev/null | grep -oE '^[^ ]+'); do
+  cmd sudo iwconfig "$interface" power off
+done

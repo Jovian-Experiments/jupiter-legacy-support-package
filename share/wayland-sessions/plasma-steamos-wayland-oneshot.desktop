@@ -1,5 +1,5 @@
 [Desktop Entry]
-Exec=/usr/bin/startplasma-steamos-oneshot
+Exec=/usr/bin/startplasma-steamos-oneshot /usr/bin/startplasma-wayland
 TryExec=/usr/bin/startplasma-steamos-oneshot
 DesktopNames=KDE (One-Time Launch)
 Name=Plasma (One-Time Launch)

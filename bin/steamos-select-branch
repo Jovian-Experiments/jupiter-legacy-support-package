@@ -30,11 +30,11 @@ if [[ $# -eq 1 ]]; then
       atomupd-manager switch-branch stable
       exit 0
       ;;
-    "stable" | "rc" | "beta" | "bc" | "main" | "staging")
+    "stable" | "rc" | "beta" | "bc" | "preview" | "pc" | "main" | "staging")
       atomupd-manager switch-branch "$1"
       exit 0
       ;;
   esac
 fi
 
-echo "Usage: steamos-select-branch <-c|-l|rel|rc|beta|bc|main>" 1>&2
+echo "Usage: steamos-select-branch <-c|-l|rel|rc|beta|bc|preview|pc|main>" 1>&2

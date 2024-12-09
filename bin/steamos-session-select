@@ -31,10 +31,10 @@ session_launcher=""
 
 case "$session" in
   plasma-wayland-persistent)
-    session_launcher="plasmawayland.desktop"
+    session_launcher="plasma.desktop"
   ;;
   plasma-x11-persistent)
-    session_launcher="plasma.desktop"
+    session_launcher="plasmax11.desktop"
   ;;
   plasma)
     session_launcher="plasma-steamos-oneshot.desktop"

@@ -11,4 +11,4 @@ if ((curbacklight > 65535 )); then
 	curbacklight=65535
 fi
 
-echo $curbacklight | sudo tee /sys/class/backlight/amdgpu_bl0/brightness
+echo $curbacklight | tee /sys/class/backlight/amdgpu_bl0/brightness

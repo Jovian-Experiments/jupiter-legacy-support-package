@@ -1,8 +1,0 @@
-#!/bin/bash
-
-set -e
-
-die() { echo >&2 "!! $*"; exit 1; }
-
-/usr/bin/steamos-session-select gamescope --no-restart
-exec $@

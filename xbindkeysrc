@@ -4,8 +4,10 @@
 "/usr/bin/backlight.sh -5000"
    XF86AudioPrev
 
-"sudo systemctl stop sddm"
-  Control+Alt + backslash
+# We really don't want to tie this to a key combo.
+# It's kind of a "wings fall off" switch.
+#"sudo systemctl stop sddm"
+#  Control+Alt + backslash
 
 "steamos-session-select plasma"
   Control+Alt + semicolon

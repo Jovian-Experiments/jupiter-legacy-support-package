@@ -20,12 +20,10 @@ case "$session" in
     steamosctl switch-to-desktop-mode
   ;;
   plasma)
-    steamosctl set-default-desktop-session plasmax11.desktop
-    steamosctl switch-to-desktop-mode
+    steamosctl switch-to-desktop-mode plasmax11.desktop
   ;;
   plasma-wayland)
-    steamosctl set-default-desktop-session plasma.desktop
-    steamosctl switch-to-desktop-mode
+    steamosctl switch-to-desktop-mode plasma.desktop
   ;;
   gamescope)
     steamosctl set-default-login-mode game
